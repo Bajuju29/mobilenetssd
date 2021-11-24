@@ -123,8 +123,7 @@ def callback():
 def reply(intent,text,reply_token,id,disname):
     text_message = TextSendMessage(text="ทดสอบ")
     line_bot_api.reply_message(reply_token,text_message)
-
-def event_handle(event):
+def event_handle(event,jsan_line):
     print(event)
     try:
         userId = event['source']['userId']
@@ -159,8 +158,12 @@ def event_handle(event):
             replyObj = TextSendMessage(text="จบิงมาก")
             line_bot_api.reply_message(rtoken, replyObj)
         else :
-            replyObj = TextSendMessage(text=msg)
-        line_bot_api.reply_message(rtoken, replyObj)
+            headers = request.headers
+            json_headers = ({k:v for k, v in headers.items()})
+            json_headers.update({'Host':'bots.dialogflow.com'})
+            url = "https://dialogflow.cloud.google.com/v1/integrations/line/webhook/cef5c4af-78c2-4f41-a09c-84f916f43467"
+            requests.post(url,data=json_line, headers=json_headers)
+            
     elif msgType == "image":
         try:
             message_content = line_bot_api.get_message_content(event['message']['id'])
